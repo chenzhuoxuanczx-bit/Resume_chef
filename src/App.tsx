@@ -190,9 +190,9 @@ function App() {
           <p className="eyebrow">Static GitHub Pages Resume Modifier</p>
           <h1>Modify a resume against a JD, then export a fixed DOCX.</h1>
           <p className="hero-copy">
-            This prototype uses one browser-side OpenAI-compatible provider,
-            supports in-page editing, and exports a fixed-format DOCX inspired by
-            your uploaded resume reference.
+            This prototype uses one browser-side Ark API provider, supports
+            in-page editing, and exports a fixed-format DOCX inspired by your
+            uploaded resume reference.
           </p>
         </div>
         <div className="hero-notes">
@@ -204,8 +204,8 @@ function App() {
             </p>
           </div>
           <div className="hero-note">
-            <strong>Bring your own API key</strong>
-            <p>Never hardcode or commit API keys into source control.</p>
+            <strong>Bring your own Ark API key</strong>
+            <p>Never hardcode or commit Ark API keys into source control.</p>
           </div>
         </div>
       </header>
@@ -245,12 +245,12 @@ function App() {
           </label>
 
           <label>
-            API key
+            Ark API key
             <input
               type="password"
               value={apiKey}
               onChange={(event) => setApiKey(event.target.value)}
-              placeholder="Paste your own OpenAI-compatible API key"
+              placeholder="Paste your Ark API key"
             />
           </label>
 
@@ -420,8 +420,8 @@ function App() {
               <h3>Ready for the first generation</h3>
               <p>
                 Paste a JD, paste the current resume, optionally add steering
-                instructions, then generate. If no API key is present, the app
-                will show a clearly labeled sample/demo modified resume.
+                instructions, then generate. If no Ark API key is present, the
+                app will show a clearly labeled sample/demo modified resume.
               </p>
             </div>
           )}
