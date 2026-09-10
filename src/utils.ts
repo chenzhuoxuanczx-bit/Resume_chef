@@ -234,3 +234,102 @@ export function buildSampleModifiedResume(
     ],
   })
 }
+
+function tokenize(text: string) {
+  return (text.toLowerCase().match(/[a-z][a-z0-9+\-/.]{2,}/g) ?? []).filter(
+    (token) =>
+      ![
+        'with',
+        'from',
+        'that',
+        'this',
+        'then',
+        'into',
+        'your',
+        'have',
+        'will',
+        'their',
+        'about',
+        'using',
+        'used',
+        'role',
+        'team',
+        'work',
+        'across',
+        'more',
+        'than',
+        'what',
+      ].includes(token),
+  )
+}
+
+export function analyzeMissingCoverage(
+  jobDescription: string,
+  resume: ResumeData | null,
+) {
+  if (!resume) {
+    return {
+      missingKeywords: [] as string[],
+      missingSkills: [] as string[],
+    }
+  }
+
+  const jdTokens = tokenize(jobDescription)
+  const topJdTerms = [...new Set(jdTokens)].slice(0, 40)
+
+  const resumeText = [
+    resume.targetRole,
+    resume.targetLocation,
+    ...resume.skillCategories.flatMap((category) => category.items),
+    ...resume.experience.flatMap((entry) => [
+      entry.title,
+      entry.organization,
+      ...entry.bullets.flatMap((bullet) => [bullet.skill, bullet.detail]),
+    ]),
+    ...resume.projects.flatMap((entry) => [
+      entry.title,
+      ...entry.bullets.flatMap((bullet) => [bullet.skill, bullet.detail]),
+    ]),
+    ...resume.leadership.flatMap((entry) => [
+      entry.title,
+      ...entry.bullets.flatMap((bullet) => [bullet.skill, bullet.detail]),
+    ]),
+  ]
+    .join(' ')
+    .toLowerCase()
+
+  const missingKeywords = topJdTerms
+    .filter((term) => !resumeText.includes(term))
+    .slice(0, 8)
+
+  const jdSkillLikeTerms = topJdTerms.filter((term) =>
+    [
+      'strategy',
+      'analytics',
+      'sql',
+      'figma',
+      'research',
+      'marketing',
+      'workflow',
+      'ai',
+      'stakeholder',
+      'launch',
+      'messaging',
+      'product',
+      'experimentation',
+      'storytelling',
+      'enablement',
+    ].some((needle) => term.includes(needle)),
+  )
+
+  const skillText = resume.skillCategories
+    .flatMap((category) => category.items)
+    .join(' ')
+    .toLowerCase()
+
+  const missingSkills = [...new Set(jdSkillLikeTerms)]
+    .filter((term) => !skillText.includes(term))
+    .slice(0, 6)
+
+  return { missingKeywords, missingSkills }
+}

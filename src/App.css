@@ -180,6 +180,37 @@ button:disabled {
   color: #5f4836;
 }
 
+.gap-panel {
+  margin-top: 18px;
+  border: 1px solid #e1d2c5;
+  border-radius: 18px;
+  background: #fff8f1;
+  padding: 16px;
+}
+
+.gap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.gap-card {
+  border: 1px solid #ead9cb;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.gap-card h4 {
+  margin: 0 0 8px;
+  color: #4a3220;
+}
+
+.gap-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .preview-grid {
   display: grid;
   grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
@@ -306,6 +337,10 @@ button:disabled {
   }
 
   .entry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gap-grid {
     grid-template-columns: 1fr;
   }
 

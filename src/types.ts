@@ -45,6 +45,7 @@ export type GenerationResult = {
   data: ResumeData
   mode: GenerationMode
   warning?: string
+  apiFailure?: string
 }
 
 export const resumeSchemaDescription = `

@@ -56,14 +56,14 @@ async function requestStructuredResume(
     .filter(Boolean)
     .join('\n')
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4.1-mini',
+      model: 'doubao-seed-1-6-thinking-250615',
       temperature: 0.6,
       response_format: { type: 'json_object' },
       messages: [
@@ -150,10 +150,14 @@ export async function generateResume({
             sampleResumeData.targetRole,
         },
         mode: 'sample',
+        apiFailure:
+          initialError instanceof Error
+            ? initialError.message
+            : 'Ark API call failed.',
         warning:
           initialError instanceof Error
             ? `${initialError.message} Falling back to a sample/demo modified resume.`
-            : 'Live generation failed. Falling back to a sample/demo modified resume.',
+            : 'Ark API call failed. Falling back to a sample/demo modified resume.',
       }
     }
   }

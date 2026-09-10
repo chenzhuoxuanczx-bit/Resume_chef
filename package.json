@@ -1,13 +1,13 @@
 {
-  "name": "ideal-resume-docx",
+  "name": "resume-chef",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:pages": "tsc -b && vite build && rm -rf docs && mkdir -p docs && cp -R dist/. docs/",
-    "lint": "oxlint",
+    "build:pages": "tsc -b && vite build",
+    "lint": "oxlint src",
     "preview": "vite preview"
   },
   "dependencies": {

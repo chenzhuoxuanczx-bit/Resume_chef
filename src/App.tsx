@@ -4,6 +4,7 @@ import { exportResumeDocx } from './docx'
 import { generateResume } from './generate'
 import { sampleJobDescription, sampleResume } from './sampleData'
 import type { ResumeData, ResumeEntry } from './types'
+import { analyzeMissingCoverage } from './utils'
 
 type Status = 'idle' | 'loading' | 'done' | 'error'
 
@@ -147,6 +148,7 @@ function App() {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
   const [warning, setWarning] = useState('')
+  const [apiFailure, setApiFailure] = useState('')
   const [resumeData, setResumeData] = useState<ResumeData | null>(null)
   const [mode, setMode] = useState<'live' | 'sample'>('sample')
 
@@ -160,6 +162,7 @@ function App() {
     setStatus('loading')
     setError('')
     setWarning('')
+    setApiFailure('')
 
     try {
       const result = await generateResume({
@@ -172,6 +175,7 @@ function App() {
       setResumeData(result.data)
       setMode(result.mode)
       setWarning(result.warning ?? '')
+      setApiFailure(result.apiFailure ?? '')
       setStatus('done')
     } catch (generationError) {
       setStatus('error')
@@ -183,6 +187,8 @@ function App() {
     }
   }
 
+  const coverage = analyzeMissingCoverage(jobDescription, resumeData)
+
   return (
     <div className="app-shell">
       <header className="hero">
@@ -191,8 +197,8 @@ function App() {
           <h1>Modify a resume against a JD, then export a fixed DOCX.</h1>
           <p className="hero-copy">
             This prototype uses one browser-side Ark API provider, supports
-            in-page editing, and exports a fixed-format DOCX inspired by your
-            uploaded resume reference.
+            in-page editing, and exports a fixed-format DOCX inspired by
+            your uploaded resume reference.
           </p>
         </div>
         <div className="hero-notes">
@@ -280,12 +286,52 @@ function App() {
 
           <div className="notice-stack">
             {warning ? <p className="notice warning">{warning}</p> : null}
+            {apiFailure ? (
+              <p className="notice error">
+                <strong>Ark API failure flagged:</strong> {apiFailure}
+              </p>
+            ) : null}
             {error ? <p className="notice error">{error}</p> : null}
             <p className="notice info">
               Status:{' '}
               <strong>{mode === 'sample' ? 'sample/demo mode' : 'live mode'}</strong>
             </p>
           </div>
+
+          {status === 'done' ? (
+            <section className="gap-panel">
+              <div className="section-heading">
+                <h3>Flagged after this run</h3>
+                <span>Missing keywords / skills under the sample button area</span>
+              </div>
+              <div className="gap-grid">
+                <div className="gap-card">
+                  <h4>Missing keywords</h4>
+                  {coverage.missingKeywords.length > 0 ? (
+                    <ul>
+                      {coverage.missingKeywords.map((keyword) => (
+                        <li key={keyword}>{keyword}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No obvious missing JD keywords were detected.</p>
+                  )}
+                </div>
+                <div className="gap-card">
+                  <h4>Missing skills</h4>
+                  {coverage.missingSkills.length > 0 ? (
+                    <ul>
+                      {coverage.missingSkills.map((skill) => (
+                        <li key={skill}>{skill}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No obvious missing skills were detected.</p>
+                  )}
+                </div>
+              </div>
+            </section>
+          ) : null}
         </section>
 
         <section className="preview-panel">
