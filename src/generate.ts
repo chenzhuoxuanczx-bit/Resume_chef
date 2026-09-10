@@ -70,7 +70,7 @@ async function requestStructuredResume(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'doubao-seed-1-6-thinking-250615',
+      model: 'deepseek-v4-pro-ga-260813',
       temperature: 0.6,
       response_format: { type: 'json_object' },
       messages: [
