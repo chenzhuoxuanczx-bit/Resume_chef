@@ -56,21 +56,22 @@ async function requestStructuredResume(
     .filter(Boolean)
     .join('\n')
 
-  const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
+    const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-body: JSON.stringify({
-  model: 'deepseek-v4-pro-ga-260813',
-  temperature: 0.6,
-  response_format: { type: 'json_object' },
-  messages: [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: userPrompt },
-  ],
-}),
+    body: JSON.stringify({
+      model: 'deepseek-v4-pro-ga-260813',
+      temperature: 0.6,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    }),
+  })
 
   if (!response.ok) {
     const text = await response.text()
