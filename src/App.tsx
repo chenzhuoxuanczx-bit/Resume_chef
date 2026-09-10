@@ -148,9 +148,8 @@ function App() {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
   const [warning, setWarning] = useState('')
-  const [apiFailure, setApiFailure] = useState('')
   const [resumeData, setResumeData] = useState<ResumeData | null>(null)
-  const [mode, setMode] = useState<'live' | 'sample'>('sample')
+  const [mode, setMode] = useState<'live'>('live')
 
   async function handleGenerate() {
     if (!jobDescription.trim() || !existingResume.trim()) {
@@ -162,7 +161,6 @@ function App() {
     setStatus('loading')
     setError('')
     setWarning('')
-    setApiFailure('')
 
     try {
       const result = await generateResume({
@@ -175,10 +173,10 @@ function App() {
       setResumeData(result.data)
       setMode(result.mode)
       setWarning(result.warning ?? '')
-      setApiFailure(result.apiFailure ?? '')
       setStatus('done')
     } catch (generationError) {
       setStatus('error')
+      setResumeData(null)
       setError(
         generationError instanceof Error
           ? generationError.message
@@ -203,10 +201,10 @@ function App() {
         </div>
         <div className="hero-notes">
           <div className="hero-note">
-            <strong>Fictional demo output</strong>
+            <strong>No synthetic fallback</strong>
             <p>
-              Generated people, achievements, and bullets are for learning/demo
-              use only.
+              If generation fails, the app shows an error instead of inventing
+              a replacement resume.
             </p>
           </div>
           <div className="hero-note">
@@ -286,15 +284,10 @@ function App() {
 
           <div className="notice-stack">
             {warning ? <p className="notice warning">{warning}</p> : null}
-            {apiFailure ? (
-              <p className="notice error">
-                <strong>Ark API failure flagged:</strong> {apiFailure}
-              </p>
-            ) : null}
             {error ? <p className="notice error">{error}</p> : null}
             <p className="notice info">
               Status:{' '}
-              <strong>{mode === 'sample' ? 'sample/demo mode' : 'live mode'}</strong>
+              <strong>{mode === 'live' ? 'live mode' : 'live mode'}</strong>
             </p>
           </div>
 
@@ -466,8 +459,8 @@ function App() {
               <h3>Ready for the first generation</h3>
               <p>
                 Paste a JD, paste the current resume, optionally add steering
-                instructions, then generate. If no Ark API key is present, the
-                app will show a clearly labeled sample/demo modified resume.
+                instructions, add an Ark API key, then generate. If generation
+                fails, the app will stop and show the error.
               </p>
             </div>
           )}

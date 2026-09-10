@@ -6,8 +6,8 @@ exports a fixed-format `.docx` file.
 
 The hosted version is designed for GitHub Pages and does not require a backend.
 Users paste their own Ark API key into the page for live browser-side generation.
-If no Ark API key is provided, the app shows a clearly labeled sample/demo modified
-resume instead of pretending to rewrite the user’s actual resume locally.
+If no Ark API key is provided, or the API request fails, the app stops and shows
+an error instead of inventing a replacement resume.
 
 ## Core workflow
 
@@ -98,16 +98,15 @@ The site will then be served from:
 
 ## Usage notes
 
-- Generated resume content is fictional/demo-oriented and should be reviewed before any real-world use.
 - Do not hardcode or commit API keys.
 - If live generation returns invalid JSON, the app retries once automatically.
-- If the Ark API call fails, the UI flags the failure explicitly and falls back to a clearly labeled sample/demo modified resume.
-- After each run, the UI flags missing keywords and missing skills under the sample-load area.
+- If the Ark API call fails, the UI stops and shows the error without generating a replacement resume.
+- After each successful run, the UI flags missing keywords and missing skills under the sample-load area.
 
 ## Files to know
 
 - `src/App.tsx` — main UI and in-page editor
-- `src/generate.ts` — browser-side generation flow and fallback
+- `src/generate.ts` — browser-side generation flow and error handling
 - `src/docx.ts` — fixed-format DOCX export
 - `src/sampleData.ts` — sample JD, resume, and sample output
 - `public/template.docx` — fixed template reference asset

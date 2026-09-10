@@ -39,13 +39,12 @@ export type ResumeData = {
   awards: string[]
 }
 
-export type GenerationMode = 'live' | 'sample'
+export type GenerationMode = 'live'
 
 export type GenerationResult = {
   data: ResumeData
   mode: GenerationMode
   warning?: string
-  apiFailure?: string
 }
 
 export const resumeSchemaDescription = `

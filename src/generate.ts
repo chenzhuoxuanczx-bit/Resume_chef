@@ -1,7 +1,6 @@
-import { sampleResumeData } from './sampleData'
 import type { GenerationResult, ResumeData } from './types'
 import { resumeSchemaDescription } from './types'
-import { buildSampleModifiedResume, validateResumeData } from './utils'
+import { validateResumeData } from './utils'
 
 type OpenAIResponse = {
   choices?: Array<{
@@ -9,6 +8,14 @@ type OpenAIResponse = {
       content?: string
     }
   }>
+}
+
+function normalizeApiError(text: string) {
+  if (!text.trim()) {
+    return 'Ark API request failed.'
+  }
+
+  return text
 }
 
 function extractJson(content: string) {
@@ -56,14 +63,14 @@ async function requestStructuredResume(
     .filter(Boolean)
     .join('\n')
 
-    const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
+  const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'deepseek-v4-pro-ga-260813',
+      model: 'doubao-seed-1-6-thinking-250615',
       temperature: 0.6,
       response_format: { type: 'json_object' },
       messages: [
@@ -75,7 +82,7 @@ async function requestStructuredResume(
 
   if (!response.ok) {
     const text = await response.text()
-    throw new Error(`Live generation failed: ${response.status} ${text}`)
+    throw new Error(`Live generation failed: ${response.status} ${normalizeApiError(text)}`)
   }
 
   const payload = (await response.json()) as OpenAIResponse
@@ -102,16 +109,7 @@ export async function generateResume({
   extraInstructions: string
 }): Promise<GenerationResult> {
   if (!apiKey.trim()) {
-    return {
-      data: buildSampleModifiedResume(
-        jobDescription,
-        existingResume,
-        extraInstructions,
-      ),
-      mode: 'sample',
-      warning:
-        'No API key detected. Showing a clearly labeled sample/demo modified resume instead of rewriting your actual resume.',
-    }
+    throw new Error('An Ark API key is required. Generation was not attempted.')
   }
 
   try {
@@ -142,23 +140,11 @@ export async function generateResume({
         warning: 'The first model response was invalid JSON, so the app retried automatically.',
       }
     } catch {
-      return {
-        data: {
-          ...sampleResumeData,
-          targetRole:
-            jobDescription.split('\n').map((line) => line.trim()).find(Boolean) ||
-            sampleResumeData.targetRole,
-        },
-        mode: 'sample',
-        apiFailure:
-          initialError instanceof Error
-            ? initialError.message
-            : 'Ark API call failed.',
-        warning:
-          initialError instanceof Error
-            ? `${initialError.message} Falling back to a sample/demo modified resume.`
-            : 'Ark API call failed. Falling back to a sample/demo modified resume.',
-      }
+      throw new Error(
+        initialError instanceof Error
+          ? initialError.message
+          : 'Ark API call failed.',
+      )
     }
   }
 }
