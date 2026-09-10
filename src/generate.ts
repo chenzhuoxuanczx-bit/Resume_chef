@@ -62,16 +62,15 @@ async function requestStructuredResume(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: 'doubao-seed-1-6-thinking-250615',
-      temperature: 0.6,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-    }),
-  })
+body: JSON.stringify({
+  model: 'deepseek-v4-pro-ga-260813',
+  temperature: 0.6,
+  response_format: { type: 'json_object' },
+  messages: [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt },
+  ],
+}),
 
   if (!response.ok) {
     const text = await response.text()
